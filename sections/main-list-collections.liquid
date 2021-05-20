@@ -1,0 +1,378 @@
+<div class="page-width">
+  {%- if section.settings.show_title -%}
+    <h1 class="title title--primary">{{ 'sections.collection_list_template.title' | t }}</h1>
+  {%- endif -%}
+
+  {%- liquid
+    case section.settings.sort
+      when 'products_high' or 'products_low'
+        assign collections = collections | sort: 'all_products_count'
+      when 'date' or 'date_reversed'
+        assign collections = collections | sort: 'published_at'
+    endcase
+
+    if section.settings.sort == 'products_high' or section.settings.sort == 'date_reversed' or section.settings.sort == 'alphabetical_reversed'
+      assign collections = collections | reverse
+    endif
+
+    assign collection_count_mod_4 = collections.size | modulo: 4
+  -%}
+
+  <ul class="grid grid--2-col{% unless collections.size == 4 %} grid--3-col-tablet{% endunless %}{% if collection_count_mod_4 == 0 %} grid--4-col-desktop{% endif %}" role="list">
+    {% for collection in collections %}
+      {% render 'collection-card' with collection as collection, card_size: section.settings.collection_card_size %}
+    {% endfor %}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": {
+    "cs": "Stránka se seznamem kolekcí",
+    "da": "Siden Kollektionsliste",
+    "de": "Listenseite für Kategorien",
+    "en": "Collections list page",
+    "es": "Página de lista de colecciones",
+    "fi": "Kokoelmaluettelosivu",
+    "fr": "Page de liste des collections",
+    "it": "Pagina con elenco delle collezioni",
+    "ja": "コレクションリストのページ",
+    "ko": "컬렉션 목록 페이지",
+    "nb": "Samlingsliste-side",
+    "nl": "Pagina collectielijst",
+    "pl": "Strona listy kolekcji",
+    "pt-BR": "Página da lista de coleções",
+    "pt-PT": "Página da lista de coleções",
+    "sv": "Sida för produktserielista",
+    "th": "หน้ารายการคอลเลกชัน",
+    "tr": "Koleksiyonlar listesi sayfası",
+    "vi": "Trang danh sách bộ sưu tập",
+    "zh-CN": "产品系列列表页面",
+    "zh-TW": "商品系列清單頁面"
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": {
+        "cs": "Zobrazit název",
+        "da": "Vis titel",
+        "de": "Titel anzeigen",
+        "en": "Show title",
+        "es": "Mostrar nombre",
+        "fi": "Näytä otsikko",
+        "fr": "Afficher le titre",
+        "it": "Mostra titolo",
+        "ja": "タイトルを表示する",
+        "ko": "제목 표시",
+        "nb": "Vis tittel",
+        "nl": "Titel tonen",
+        "pl": "Pokaż tytuł",
+        "pt-BR": "Exibir título",
+        "pt-PT": "Mostrar título",
+        "sv": "Visa titel",
+        "th": "แสดงชื่อ",
+        "tr": "Başlığı göster",
+        "vi": "Hiển thị tiêu đề",
+        "zh-CN": "显示标题",
+        "zh-TW": "顯示標題"
+      },
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "sort",
+      "label": {
+        "cs": "Seřadit kolekce:",
+        "da": "Sortér kollektioner efter:",
+        "de": "Kategorien sortieren nach:",
+        "en": "Sort collections by:",
+        "es": "Ordenar colecciones por:",
+        "fi": "Lajittele kokoelmat seuraavasti:",
+        "fr": "Trier les collections par :",
+        "it": "Ordina le collezioni per:",
+        "ja": "コレクションの並べ替え方法:",
+        "ko": "컬렉션 정렬 기준:",
+        "nb": "Sorter samlinger etter:",
+        "nl": "Collecties sorteren op:",
+        "pl": "Sortuj kolekcje według:",
+        "pt-BR": "Organizar coleções por:",
+        "pt-PT": "Ordenar coleções por:",
+        "sv": "Sortera produktserier efter:",
+        "th": "จัดเรียงคอลเลกชันตาม:",
+        "tr": "Koleksiyonları sıralama ölçütü:",
+        "vi": "Sắp xếp bộ sưu tập theo:",
+        "zh-CN": "产品系列排序依据：",
+        "zh-TW": "以下列方式排序商品系列："
+      },
+      "default": "alphabetical",
+      "options": [
+        {
+          "value": "products_high",
+          "label": {
+            "cs": "Od nejvyššího počtu produktů po nejnižší",
+            "da": "Produktantal, høj til lav",
+            "de": "Produktanzahl, hoch zu niedrig",
+            "en": "Product count, high to low",
+            "es": "Recuento de productos, de mayor a menor",
+            "fi": "Tuotteiden määrä suurimmasta pienimpään",
+            "fr": "Nombre de produits, par ordre décroissant",
+            "it": "Conteggio decrescente prodotti",
+            "ja": "商品数の多い順",
+            "ko": "제품 개수, 높은 개수부터",
+            "nb": "Produktantall, høy til lav",
+            "nl": "Aantal producten, van hoog naar laag",
+            "pl": "Liczba produktów, od najwyższej do najniższej",
+            "pt-BR": "Contagem de produtos, da maior para a menor",
+            "pt-PT": "Contagem de produtos, alta para baixa",
+            "sv": "Produktantal, högt till lågt",
+            "th": "เรียงตามจำนวนสินค้า จากมากไปน้อย",
+            "tr": "Ürün sayısı, yüksekten düşüğe",
+            "vi": "Số lượng sản phẩm, từ cao đến thấp",
+            "zh-CN": "产品数量，从高到低",
+            "zh-TW": "產品數量 (從高到低)"
+          }
+        },
+        {
+          "value": "products_low",
+          "label": {
+            "cs": "Od nejnižšího počtu produktů po nejvyšší",
+            "da": "Produktantal, lav til høj",
+            "de": "Produktanzahl, niedrig zu hoch",
+            "en": "Product count, low to high",
+            "es": "Recuento de productos, de menor a mayor",
+            "fi": "Tuotteiden määrä pienimmästä suurimpaan",
+            "fr": "Nombre de produits, par ordre croissant",
+            "it": "Conteggio crescente prodotti",
+            "ja": "商品数の少ない順",
+            "ko": "제품 개수, 낮은 개수부터",
+            "nb": "Produktantall, lav til høy",
+            "nl": "Aantal producten, van laag naar hoog",
+            "pl": "Liczba produktów, od najniższej do najwyższej",
+            "pt-BR": "Contagem de produtos, da menor para a maior",
+            "pt-PT": "Contagem de produtos, baixa para alta",
+            "sv": "Produktantal, lågt till högt",
+            "th": "เรียงตามจำนวนสินค้า จากน้อยไปมาก",
+            "tr": "Ürün sayısı, düşükten yükseğe",
+            "vi": "Số lượng sản phẩm, từ thấp đến cao",
+            "zh-CN": "产品数量，从低到高",
+            "zh-TW": "產品數量 (從低到高)"
+          }
+        },
+        {
+          "value": "alphabetical",
+          "label": {
+            "cs": "Abecedně: A–Z",
+            "da": "Alfabetisk, A-Å",
+            "de": "Alphabetisch, A-Z",
+            "en": "Alphabetically, A-Z",
+            "es": "Alfabéticamente, A-Z",
+            "fi": "Aakkosjärjestyksessä A–Z",
+            "fr": "Alphabétique, de A à Z",
+            "it": "In ordine alfabetico, A-Z",
+            "ja": "アルファベット順 (A-Z)",
+            "ko": "알파벳순, A-Z",
+            "nb": "Alfabetisk, A-Å",
+            "nl": "Alfabetisch: A-Z",
+            "pl": "Alfabetycznie, A-Z",
+            "pt-BR": "Ordem alfabética, de A a Z",
+            "pt-PT": "Alfabeticamente, A-Z",
+            "sv": "Alfabetiskt, A-Ö",
+            "th": "เรียงตามตัวอักษร A-Z",
+            "tr": "Alfabetik olarak, A-Z",
+            "vi": "Thứ tự bảng chữ cái, từ A-Z",
+            "zh-CN": "按字母顺序排序，A-Z",
+            "zh-TW": "依字母順序 (A 到 Z)"
+          }
+        },
+        {
+          "value": "alphabetical_reversed",
+          "label": {
+            "cs": "Abecedně: Z–A",
+            "da": "Alfabetisk, Å-A",
+            "de": "Alphabetisch, Z-A",
+            "en": "Alphabetically, Z-A",
+            "es": "Alfabéticamente, Z-A",
+            "fi": "Aakkosjärjestyksessä Z–A",
+            "fr": "Alphabétique, de Z à A",
+            "it": "In ordine alfabetico, Z-A",
+            "ja": "アルファベット順 (Z-A)",
+            "ko": "알파벳순, Z-A",
+            "nb": "Alfabetisk, Å-A",
+            "nl": "Alfabetisch: Z-A",
+            "pl": "Alfabetycznie, Z-A",
+            "pt-BR": "Ordem alfabética, de Z a A",
+            "pt-PT": "Alfabeticamente, Z-A",
+            "sv": "Alfabetiskt, Ö-A",
+            "th": "เรียงตามตัวอักษร Z-A",
+            "tr": "Alfabetik olarak, Z-A",
+            "vi": "Thứ tự bảng chữ cái, từ Z-A",
+            "zh-CN": "按字母顺序排序，Z-A",
+            "zh-TW": "依字母順序 (Z 到 A)"
+          }
+        },
+        {
+          "value": "date",
+          "label": {
+            "cs": "Od nejstaršího data po nejnovější",
+            "da": "Dato, ældre til nyere",
+            "de": "Datum: alt bis neu",
+            "en": "Date, old to new",
+            "es": "Fecha: antiguo/a a reciente",
+            "fi": "Päivämäärä vanhimmasta uusimpaan",
+            "fr": "Date, de la plus ancienne à la plus récente",
+            "it": "Data, dal meno recente al più recente",
+            "ja": "古い順",
+            "ko": "날짜(오래된 날짜부터)",
+            "nb": "Dato, gammelt til nytt",
+            "nl": "Datum: oud naar nieuw",
+            "pl": "Data, od najwcześniejszej do najpóźniejszej",
+            "pt-BR": "Data, mais antiga primeiro",
+            "pt-PT": "Data, mais antigos",
+            "sv": "Datum, gammalt till nytt",
+            "th": "เรียงตามวันที่ จากเก่าไปใหม่",
+            "tr": "Tarih, eskiden yeniye",
+            "vi": "Ngày, từ cũ đến mới",
+            "zh-CN": "日期，从旧到新",
+            "zh-TW": "日期 (從舊到新)"
+          }
+        },
+        {
+          "value": "date_reversed",
+          "label": {
+            "cs": "Od nejnovějšího data po nejstarší",
+            "da": "Dato, nyere til ældre",
+            "de": "Datum: neu bis alt",
+            "en": "Date, new to old",
+            "es": "Fecha: reciente a antiguo/a",
+            "fi": "Päivämäärä uusimmasta vanhimpaan",
+            "fr": "Date, de la plus récente à la plus ancienne",
+            "it": "Data, dal più recente al meno recente",
+            "ja": "新しい順",
+            "ko": "날짜(최신 날짜부터)",
+            "nb": "Dato, nytt til gammelt",
+            "nl": "Datum: nieuw naar oud",
+            "pl": "Data, od najpóźniejszej do najwcześniejszej",
+            "pt-BR": "Data, mais recente primeiro",
+            "pt-PT": "Data, mais recentes",
+            "sv": "Datum, nytt till gammalt",
+            "th": "เรียงตามวันที่ จากใหม่ไปเก่า",
+            "tr": "Tarih, yeniden eskiye",
+            "vi": "Ngày, từ mới đến cũ",
+            "zh-CN": "日期，从新到旧",
+            "zh-TW": "日期 (從新到舊)"
+          }
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "collection_card_size",
+      "label": {
+        "cs": "Velikost karty kolekcí",
+        "da": "Størrelse af kollektionskort",
+        "de": "Kategoriekartengröße",
+        "en": "Collection card size",
+        "es": "Tamaño de tarjeta de colecciones",
+        "fi": "Kokoelman kortin koko",
+        "fr": "Taille des cartes de la collection",
+        "it": "Dimensione carta collezioni",
+        "ja": "コレクションカードのサイズ",
+        "ko": "컬렉션 카드 사이즈",
+        "nb": "Størrelse på samlingskort",
+        "nl": "Kaartomvang collectie",
+        "pl": "Rozmiar karty kolekcji",
+        "pt-BR": "Tamanho do cartão da coleção",
+        "pt-PT": "Tamanho do cartão de coleções",
+        "sv": "Storlek för produktseriekort",
+        "th": "ขนาดบัตรคอลเลกชัน",
+        "tr": "Koleksiyon kart boyutu",
+        "vi": "Cỡ thẻ bộ sưu tập",
+        "zh-CN": "产品系列卡大小",
+        "zh-TW": "商品系列卡片尺寸"
+      },
+      "default": "square",
+      "options": [
+        {
+          "value": "adapt",
+          "label": {
+            "cs": "Přizpůsobení obrázku",
+            "da": "Tilpas til billede",
+            "de": "An Bild anpassen",
+            "en": "Adapt to image",
+            "es": "Adaptar a la imagen",
+            "fi": "Sovita kuvaan",
+            "fr": "Adapter à l'image",
+            "it": "Adatta all'immagine",
+            "ja": "画像に合わせる",
+            "ko": "이미지에 맞춤",
+            "nb": "Tilpass til bilde",
+            "nl": "Aanpassen aan afbeelding",
+            "pl": "Dostosuj do obrazu",
+            "pt-BR": "Adaptar à imagem",
+            "pt-PT": "Adaptar à imagem",
+            "sv": "Anpassa till bild",
+            "th": "ปรับตามรูปภาพ",
+            "tr": "Görsele uyarla",
+            "vi": "Điều chỉnh theo hình ảnh",
+            "zh-CN": "适应图片",
+            "zh-TW": "配合圖片"
+          }
+        },
+        {
+          "value": "portrait",
+          "label": {
+            "cs": "Na výšku",
+            "da": "Stående",
+            "de": "Porträt",
+            "en": "Portrait",
+            "es": "Retrato",
+            "fi": "Portrait",
+            "fr": "Portrait",
+            "it": "Ritratto",
+            "ja": "長方形",
+            "ko": "세로형",
+            "nb": "Portrett",
+            "nl": "Portret",
+            "pl": "Portret",
+            "pt-BR": "Retrato",
+            "pt-PT": "Retrato",
+            "sv": "Porträtt",
+            "th": "แนวตั้ง",
+            "tr": "Portre",
+            "vi": "Chân dung",
+            "zh-CN": "纵向",
+            "zh-TW": "縱向"
+          }
+        },
+        {
+          "value": "square",
+          "label": {
+            "cs": "Čtverec",
+            "da": "Kvadrat",
+            "de": "Quadrat",
+            "en": "Square",
+            "es": "Cuadrado",
+            "fi": "Square",
+            "fr": "Carré",
+            "it": "Quadrato",
+            "ja": "Square",
+            "ko": "정사각형",
+            "nb": "Kvadrat",
+            "nl": "Vierkant",
+            "pl": "kwadrat",
+            "pt-BR": "Quadrado",
+            "pt-PT": "Quadrado",
+            "sv": "Kvadrat",
+            "th": "สี่เหลี่ยม",
+            "tr": "Kare",
+            "vi": "Vuông",
+            "zh-CN": "方形",
+            "zh-TW": "正方形"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
