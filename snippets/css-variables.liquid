@@ -1,0 +1,71 @@
+{%- liquid
+  assign font_body = "system, -apple-system, '.SFNSText-Regular', 'San Francisco', 'Roboto', 'Segoe UI', 'Helvetica Neue', 'Lucida Grande', sans-serif"
+  assign font_heading = settings.type_header_font
+
+  if settings.type_base_size == "large"
+    assign base_size_h0 = 0.6
+    assign base_size_h1 = 1
+    assign base_size_h2 = 0.7
+    assign base_size_h3_h4 = 0.4
+    assign base_size_h5_button_body = 0.2
+    assign base_size_price_small = 0.1
+
+    assign mobile_base_size_h1 = 0.8
+    assign mobile_base_size_h2 = 0.5
+    assign mobile_base_size_h3 = 0.4
+    assign mobile_base_size_heading = 0.2
+
+    assign line_height_small = 0.1
+    assign line_height_medium = 0.2
+    assign line_height_large = 0.3
+  endif
+
+
+  assign main_background = settings.colors_main_background
+  assign main_background_brightness = main_background | color_brightness
+  if main_background_brightness <= 26
+    assign color_poster_background = main_background | color_lighten: 10
+  elsif main_background_brightness <= 65
+    assign color_poster_background = main_background | color_lighten: 5
+  else
+    assign color_poster_background = main_background | color_darken: 5
+  endif
+-%}
+{% style %}
+  {{ font_heading | font_face: font_display: 'swap' }}
+
+  :root {
+    --font: {{ font_body }};
+    --font-heading-family: {{ font_heading.family }}, {{ font_heading.fallback_families }};
+    --font-heading-style: {{ font_heading.style }};
+    --font-heading-weight: {{ font_heading.weight }};
+
+    --base_size_h0: {{ base_size_h0 | default: 0 }}rem;
+    --base_size_h1: {{ base_size_h1 | default: 0 }}rem;
+    --base_size_h2: {{ base_size_h2 | default: 0 }}rem;
+    --base_size_h3_h4: {{ base_size_h3_h4 | default: 0 }}rem;
+    --base_size_h5_button_body: {{ base_size_h5_button_body | default: 0 }}rem;
+    --base_size_price_small: {{ base_size_price_small | default: 0 }}rem;
+    
+    --line_height_small: {{ line_height_small | default: 0 }};
+    --line_height_medium: {{ line_height_medium | default: 0 }};
+    --line_height_large: {{ line_height_large | default: 0 }};
+
+    --mobile_base_size_h1: {{ mobile_base_size_h1 | default: 0 }}rem;
+    --mobile_base_size_h2: {{ mobile_base_size_h2 | default: 0 }}rem;
+    --mobile_base_size_h3: {{ mobile_base_size_h3 | default: 0 }}rem;
+    --mobile_base_size_heading: {{ mobile_base_size_heading | default: 0 }}rem;
+
+    --color-text: {{ settings.colors_text }};
+    --color-text-rgb: {{ settings.colors_text | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --color-main-background: {{ settings.colors_main_background }};
+    --color-main-background-rgb: {{ settings.colors_main_background | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --color-plain-button-labels: {{ settings.colors_plain_button_labels }};
+    --color-plain-button-labels-rgb: {{ settings.colors_plain_button_labels | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --color-outline-button-labels: {{ settings.colors_outline_button_labels }};
+    --color-outline-button-labels-rgb: {{ settings.colors_outline_button_labels | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --color-accents: {{ settings.colors_accents }};
+    --color-accents-rgb: {{ settings.colors_accents | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --color-poster-background: {{ color_poster_background }};
+  }
+{% endstyle %}

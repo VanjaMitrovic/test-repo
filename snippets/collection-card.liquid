@@ -1,0 +1,52 @@
+{%- comment -%}
+    Renders a collection card for a given collection with settings for collection card size
+
+    Accepts:
+    - collection: {Object} Collection object
+    - card_size: {String} The setting for the aspect ratio of the card's media - square, portrait, or adapt
+    - card_class: {String} Adds extra classes to the card (optional)
+    - card_data: {String} Adds data-* attributes to the card (optional)
+
+    Usage:
+    {% render 'collection-card' with collection as collection, card_size: section.settings.collection_card_size %}
+{%- endcomment -%}
+
+{%- liquid
+  if collection.image.size != 0
+    assign collection_image = collection.image
+  elsif collection.products.first.size != 0 and collection.products.first.media != empty
+    assign collection_image = collection.products.first.featured_media.preview_image
+  else
+    assign collection_image = nil
+  endif
+-%}
+
+<li class="grid__item {{ card_class }}" {{ card_data }}>
+  <a href="{% if collection.products == empty %}#{% else %}{{ collection.url }}{% endif %}"
+    class="card card--media{% unless collection_image %} card--text-only{% endunless %}">
+
+    {%- if collection_image -%}
+      <div class="media{% if card_size == 'square' %} media--square{% endif %}{% if card_size == 'portrait' %} media--portrait{% endif %}"
+        {% if card_size == 'adapt' %}style="padding-bottom: {{ 1 | divided_by: collection_image.aspect_ratio | times: 100}}%;"{% endif %}>
+
+        <img srcset="{%- if collection_image.width >= 165 -%}{{ collection_image | img_url: '165x' }} 165w,{%- endif -%}
+          {%- if collection_image.width >= 360 -%}{{ collection_image | img_url: '360x' }} 360w,{%- endif -%}
+          {%- if collection_image.width >= 535 -%}{{ collection_image | img_url: '535x' }} 535w,{%- endif -%}
+          {%- if collection_image.width >= 720 -%}{{ collection_image | img_url: '720x' }} 720w,{%- endif -%}
+          {%- if collection_image.width >= 940 -%}{{ collection_image | img_url: '940x' }} 940w,{%- endif -%}
+          {%- if collection_image.width >= 1070 -%}{{ collection_image | img_url: '1070x' }} 1070w{%- endif -%}"
+          src="{{ collection_image | img_url: '533x' }}"
+          sizes="(min-width: 1100px) 535px, (min-width: 750px) calc((100vw - 130px) / 2), calc((100vw - 50px) / 2)"
+          alt="{{ collection.title | escape }}">
+      </div>
+    {%- endif -%}
+
+    <p class="card__text">
+      {% unless collection.title == blank %}
+        {{ collection.title }}
+      {% else %}
+        {{ 'sections.collection_list.empty_collection_title' | t }}
+      {% endunless %}
+    </p>
+  </a>
+</li>
