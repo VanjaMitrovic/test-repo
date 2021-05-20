@@ -1,0 +1,157 @@
+{%- if cart.items.size > 0 -%}
+  <table class="cart-items">
+    <caption class="visually-hidden">{{ 'sections.cart.caption' | t }}</caption>
+
+    <thead>
+      <tr>
+        <th colspan="2" scope="col"><span class="visually-hidden">{{ 'sections.cart.headings.product' | t }}</span></th>
+        <th colspan="1" scope="col"><span class="visually-hidden">{{ 'sections.cart.headings.price' | t }}</span></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {%- for item in cart.items -%}
+        <tr class="cart-item" data-cart-item-product-id="{{ item.product.id }}" data-cart-item="{{ item.key }}">
+          <td class="cart-item__media">
+            <div class="media media--square media--radius">
+              {%- if item.image -%}
+                <img src="{{ item.image | img_url: '112x' }}" alt="{{ item.image.alt }}">
+              {%- endif -%}
+            </div>
+          </td>
+
+          <td class="cart-item__details">
+            <p class="cart-item__name">{{ item.product.title }}</p>
+
+            {%- assign property_size = item.properties | size -%}
+
+            {%- unless item.product.has_only_default_variant and property_size == 0 and item.selling_plan_allocation == nil -%}
+              <dl>
+                {%- unless item.product.has_only_default_variant -%}
+                  {%- for option in item.options_with_values -%}
+                    <div class="product-option">
+                      <dt>{{ option.name }}: </dt>
+                      <dd>{{ option.value }}</dd>
+                    </div>
+                  {%- endfor -%}
+                {%- endunless -%}
+
+                {%- unless item.selling_plan_allocation == nil -%}
+                  <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                {%- endunless -%}
+
+                {%- for property in item.properties -%}
+                  {%- assign property_first_char = property.first | slice: 0 -%}
+                  {%- if property.last != blank and property_first_char != '_' -%}
+                    <div class="product-option">
+                      <dt>{{ property.first }}: </dt>
+                      <dd>
+                        {%- if property.last contains '/uploads/' -%}
+                          <a href="{{ property.last }}" target="_blank" rel="noopener noreferrer" aria-describedby="a11y-new-window">
+                            {{ property.last | split: '/' | last }}
+                          </a>
+                        {%- else -%}
+                          {{ property.last }}
+                        {%- endif -%}
+                      </dd>
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </dl>
+            {%- endunless -%}
+
+            {%- if item.discounts.size > 0 -%}
+              <ul class="discounts list--unstyled" role="list">
+                {%- for discount in item.discounts -%}
+                  <li class="discounts__discount">
+                    {%- render 'icon-discount' -%}
+                    {{ discount.title }}
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+
+            <div class="quantity" data-cart-quantity-wrapper>
+              <button class="quantity__button quantity__button--minus button button--square button--text"
+                type="button"
+                data-form-quantity-minus
+                data-cart-item-quantity-control
+                aria-label="{{ 'quantity.decrease_quantity' | t: title: item.title }}">
+
+                <span>−</span>
+              </button>
+
+              <input class="quantity__input"
+                type="number"
+                name="quantity"
+                value="{{ item.quantity }}"
+                min="1"
+                aria-live="polite"
+                aria-label="{{ 'products.product.quantity.label' | t }}"
+                data-form-quantity-input
+                data-cart-item-quantity
+              >
+
+              <button class="quantity__button quantity__button--plus button button--square button--text"
+                type="button"
+                data-form-quantity-plus
+                data-cart-item-quantity-control
+                aria-label="{{ 'quantity.increase_quantity' | t: title: item.title }}">
+
+                <span>+</span>
+              </button>
+            </div>
+
+            <small class="small" role="status" data-cart-item-error></small>
+          </td>
+
+          <td class="cart-item__prices">
+            {%- if item.original_line_price != item.final_line_price -%}
+            <dl class="cart-item__discounted-prices">
+              <dt class="visually-hidden">
+                {{ 'products.product.sale_price' | t }}
+              </dt>
+              <dd>
+                <strong>
+                  {{ item.final_line_price | money }}
+                </strong>
+              </dd>
+              <dt class="visually-hidden">
+                {{ 'products.product.regular_price' | t }}
+              </dt>
+              <dd>
+                <s class="cart-item__old-price">
+                  {{ item.original_line_price | money }}
+                </s>
+              </dd>
+            </dl>
+            {%- else -%}
+              <span>{{ item.original_line_price | money }}</span>
+            {%- endif -%}
+
+            {%- if item.variant.available and item.unit_price_measurement -%}
+              <small class="unit-price unit-price--right caption-with-letter-spacing"
+                data-unit-price-container>
+
+                <span class="visually-hidden">{{ 'products.product.unit_price_label' | t }}</span>
+                <span data-unit-price>{{ item.variant.unit_price | money }}</span>
+                <span aria-hidden="true">/</span>
+                <span class="visually-hidden">&nbsp;{{ 'general.accessibility.unit_price_separator' | t }}&nbsp;</span>
+                <span data-unit-price-base-unit>
+                  {%- if item.variant.unit_price_measurement.reference_value != 1 -%}
+                    {{- item.variant.unit_price_measurement.reference_value -}}
+                  {%- endif -%}
+                  {{ item.variant.unit_price_measurement.reference_unit }}
+                </span>
+              </small>
+            {%- endif -%}
+          </div>
+
+          <button class="cart-item__remove-button link" aria-label="{{ 'sections.cart.remove_title' | t: title: item.title }}" data-remove>
+            {{ 'sections.cart.remove' | t }}
+          </button>
+        </td>
+      {%- endfor -%}
+    </tbody>
+  </table>
+{%- endif -%}
