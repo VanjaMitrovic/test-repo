@@ -1,0 +1,98 @@
+<div class="cart__warnings">
+  <p class="cart__empty-text" data-cart-empty-text>{{ 'sections.cart.empty' | t }}</p>
+  {%- if render_continue_shopping -%}
+    <a href="{{ routes.root_url }}" class="link cart__continue">
+      {{ 'general.continue_shopping' | t }}
+    </a>
+  {%- endif -%}
+  <p class="cart__no-cookies-text">{{ 'sections.cart.cookies_required' | t }}</p>
+</div>
+
+<form action="{{ routes.cart_url }}"
+  class="cart__contents critical-hidden"
+  method="post"
+  novalidate>
+
+  <div class="cart__items" data-cart-items>
+    {%- if render_item_section -%}
+      {% section 'cart-items-full-table' %}
+    {%- endif -%}
+  </div>
+
+  <div>
+    {%- if settings.show_cart_note -%}
+      <div class="cart__note">
+        <label for="Note" class="form__label">{{ 'sections.cart.note' | t }}</label>
+        <textarea class="form__text-area" name="note" id="Note" data-cart-note>{{ cart.note }}</textarea>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="cart__footer">
+    <div class="totals">
+      <h3 class="totals__subtotal">{{ 'sections.cart.subtotal' | t }}</h3>
+      <p class="totals__subtotal-value" data-cart-price>{{ cart.total_price | money }}</p>
+      <p class="visually-hidden" data-price-live-region role="status"></p>
+      <p class="visually-hidden" data-item-update-live-region role="status"></p>
+    </div>
+
+    <div data-discounts>
+      {%- unless cart.cart_level_discount_applications.size == 0 -%}
+        <ul class="discounts list--unstyled" role="list">
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <li class="discounts__discount">
+              {%- render 'icon-discount' -%}
+              {{ discount.title }}
+              (-{{ discount.total_allocated_amount | money }})
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endunless -%}
+    </div>
+
+    <p class="small tax-note rte">
+      {%- if shop.taxes_included and shop.shipping_policy.body != blank -%}
+        {{ 'sections.cart.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+      {%- elsif shop.taxes_included -%}
+        {{ 'sections.cart.taxes_included_but_shipping_at_checkout' | t }}
+      {%- elsif shop.shipping_policy.body != blank -%}
+        {{ 'sections.cart.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+      {%- else -%}
+        {{ 'sections.cart.taxes_and_shipping_at_checkout' | t }}
+      {%- endif -%}
+    </p>
+
+    <div class="cart__ctas">
+      <button 
+        type="submit"
+        class="cart__update-button button button--outline no-js-inline"
+        name="update"
+      >
+        {{ 'sections.cart.update' | t }}
+      </button>
+
+      <button type="submit"
+        class="cart__checkout-button button"
+        name="checkout"
+        data-checkout-button
+        {% if cart.items.size == 0 %} disabled{% endif %}>
+
+        {{ 'sections.cart.checkout' | t }}
+      </button>
+
+      {%- if additional_checkout_buttons -%}
+        <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+          {{ content_for_additional_checkout_buttons }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if render_view_cart -%}
+      <p class="small center">
+        <a href="{{ routes.cart_url }}" class="link">
+          {{ 'sections.cart.view_cart' | t }}
+        </a>
+      </p>
+    {%- endif -%}
+  </div>
+</form>

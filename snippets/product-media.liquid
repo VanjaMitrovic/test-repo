@@ -1,0 +1,44 @@
+{% comment %}
+    Renders product media
+
+    Accepts:
+    - media: {Object} Media that will be rendered
+    - featured_media: {Object} The featured media on the current product
+    - enable_zoom: {Boolean} If media is an image, outputs a [data-src-zoom] pointing to a larger image size (optional)
+
+    Usage:
+    {% render 'product-media', media: media, featured_media %}
+{% endcomment %}
+
+<div class="product__media media{% if featured_media == media %} is-active{% endif %}"
+  data-media-id="{{ media.id }}"
+  data-media-type="{{ media.media_type }}"
+  style="padding-top:{% unless media.media_type == 'model' %}{{ 1 | divided_by: media.aspect_ratio | times: 100 }}{%- else -%}100{% endunless %}%;"
+  tabindex="-1"
+>
+  {%- case media.media_type -%}
+  {%- when 'image' -%}
+    <img
+      srcset="{% if media.preview_image.width >= 311 %}{{ media.preview_image | img_url: '311x' }} 311w,{% endif %}
+            {% if media.preview_image.width >= 622 %}{{ media.preview_image | img_url: '622x' }} 622w,{% endif %}
+            {% if media.preview_image.width >= 503 %}{{ media.preview_image | img_url: '503x' }} 503w,{% endif %}
+            {% if media.preview_image.width >= 1006 %}{{ media.preview_image | img_url: '1006x' }} 1006w,{% endif %}
+            {% if media.preview_image.width >= 685 %}{{ media.preview_image | img_url: '685x' }} 685w,{% endif %}
+            {% if media.preview_image.width >= 1370 %}{{ media.preview_image | img_url: '1370x' }} 1370w{% endif %}"
+      src="{{ media | img_url: '503x503' }}"
+      sizes="(min-width: 1200px) calc((1200px - 19.5rem) / 2), (min-width: 750px) calc((100vw - 19.5rem) / 2), calc(100vw - 6.4rem)"
+      {%- if enable_zoom %}data-src-zoom="{{ media | img_url: '1006x', scale: '2' }}"{%- endif %}
+      loading="lazy"
+      class="gallery__image"
+      alt="{{ media.preview_image.alt | escape }}"
+    >
+  {%- when 'external_video' -%}
+    {{ media | external_video_tag: data-video-id: media.id }}
+  {%- when 'video' -%}
+    {{ media | video_tag: image_size: '550x', class: 'media-video', controls: true, data-video-id: media.id }}
+  {%- when 'model' -%}
+    {{ media | model_viewer_tag: image_size: '550x', reveal: 'interaction', toggleable: true, data-model-id: media.id }}
+  {%- else -%}
+    {{ media | media_tag: class: 'media-item' }}
+  {%- endcase -%}
+</div>
